@@ -3,3 +3,8 @@ env
 *.txt
 !data.txt
 !requirements.txt
+*.py
+!bot.py
+__pycache__
+sessions
+*.json
