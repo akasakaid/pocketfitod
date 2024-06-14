@@ -125,10 +125,11 @@ class PocketfiTod:
                 list_countdown.append(res)
             _end = int(time.time())
             _tot = _end - _start
+            _min = min(list_countdown) - _tot
+            
             if _tot <= 0:
                 continue
             
-            _min = min(list_countdown) - _tot
             self.countdown(_min)
             
 
