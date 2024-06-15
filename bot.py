@@ -84,6 +84,9 @@ class PocketfiTod:
         headers = self.headers.copy()
         headers['telegramRawData'] = tg_data
         res = self.http(url,headers)
+        if len(res.text) <= 0:
+            self.log(f'{merah}failed get resopnse, 0 length response !')
+            return 60
         balance = res.json()['userMining']['gotAmount']
         last_claim = res.json()['userMining']['dttmLastClaim'] / 1000
         self.log(f'{hijau}balance : {putih}{balance}')
@@ -93,6 +96,9 @@ class PocketfiTod:
             return can_claim
         
         res = self.http(url_claim,headers,'')
+        if len(res.text) <= 0:
+            self.log(f'{merah}failed get response, 0 length response !')
+            return 60
         new_balance = res.json()['userMining']['gotAmount']
         self.log(f'{hijau}balance after claim : {putih}{new_balance}')
         return 3600
