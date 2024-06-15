@@ -39,26 +39,26 @@ class PocketfiTod:
         now = datetime.now().timestamp()
         tetod = round(next_claim - now)
         return tetod
-    
-    def http(self,url,headers,data=None):
+
+    def http(self, url, headers, data=None):
         while True:
             try:
                 if data is None:
-                    res = requests.get(url,headers=headers)
-                    open("http.log","a",encoding="utf-8").write(f"{res.text}\n")
+                    res = requests.get(url, headers=headers)
+                    open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
                     return res
-                
+
                 if data == "":
-                    res = requests.post(url,headers=headers)
-                    open("http.log","a",encoding="utf-8").write(f"{res.text}\n")
+                    res = requests.post(url, headers=headers)
+                    open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
                     return res
-                
-                res = requests.post(url,headers=headers,data=data)
-                open("http.log","a",encoding="utf-8").write(f"{res.text}\n")
+
+                res = requests.post(url, headers=headers, data=data)
+                open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
                 return res
-            
-            except (requests.exceptions.Timeout,requests.exceptions.ConnectionError):
-                self.log(f'{merah}connection error / connection timeout !')
+
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                self.log(f"{merah}connection error / connection timeout !")
                 time.sleep(1)
                 continue
 
@@ -74,35 +74,35 @@ class PocketfiTod:
             time.sleep(1)
         print("                          ", flush=True, end="\r")
 
-    def log(self,msg):
+    def log(self, msg):
         now = datetime.now().isoformat(" ").split(".")[0]
-        print(f'{hitam}[{now}] {reset}{msg}')
+        print(f"{hitam}[{now}] {reset}{msg}")
 
-    def get_user_mining(self,tg_data):
-        url = 'https://rubot.pocketfi.org/mining/getUserMining'
-        url_claim = 'https://rubot.pocketfi.org/mining/claimMining'
+    def get_user_mining(self, tg_data):
+        url = "https://rubot.pocketfi.org/mining/getUserMining"
+        url_claim = "https://rubot.pocketfi.org/mining/claimMining"
         headers = self.headers.copy()
-        headers['telegramRawData'] = tg_data
-        res = self.http(url,headers)
+        headers["telegramRawData"] = tg_data
+        res = self.http(url, headers)
         if len(res.text) <= 0:
-            self.log(f'{merah}failed get resopnse, 0 length response !')
+            self.log(f"{merah}failed get resopnse, 0 length response !")
             return 60
-        balance = res.json()['userMining']['gotAmount']
-        last_claim = res.json()['userMining']['dttmLastClaim'] / 1000
-        self.log(f'{hijau}balance : {putih}{balance}')
+        balance = res.json()["userMining"]["gotAmount"]
+        last_claim = res.json()["userMining"]["dttmLastClaim"] / 1000
+        self.log(f"{hijau}balance : {putih}{balance}")
         can_claim = self.next_claim_is(last_claim)
         if can_claim >= 0:
-            self.log(f'{kuning}not time to claim !')
+            self.log(f"{kuning}not time to claim !")
             return can_claim
-        
-        res = self.http(url_claim,headers,'')
+
+        res = self.http(url_claim, headers, "")
         if len(res.text) <= 0:
-            self.log(f'{merah}failed get response, 0 length response !')
+            self.log(f"{merah}failed get response, 0 length response !")
             return 60
-        new_balance = res.json()['userMining']['gotAmount']
-        self.log(f'{hijau}balance after claim : {putih}{new_balance}')
+        new_balance = res.json()["userMining"]["gotAmount"]
+        self.log(f"{hijau}balance after claim : {putih}{new_balance}")
         return 3600
-    
+
     def main(self):
         banner = f"""
     {hijau}Auto Claim {putih}Pocketfi Bot {hijau}Telegram Every 1 Hour
@@ -115,16 +115,16 @@ class PocketfiTod:
         if "marinkitagawa" not in arg:
             os.system("cls" if os.name == "nt" else "clear")
         print(banner)
-        datas = open("data.txt","r").read().splitlines()
+        datas = open("data.txt", "r").read().splitlines()
         if len(datas) <= 0:
             self.log(f"{merah}add data account in data.txt first !")
             sys.exit()
-        self.log(f'{hijau}account detected : {putih}{len(datas)}')
+        self.log(f"{hijau}account detected : {putih}{len(datas)}")
         print(self.line)
         while True:
             list_countdown = []
             _start = int(time.time())
-            for no,data in enumerate(datas):
+            for no, data in enumerate(datas):
                 self.log(f"{hijau}account number : {putih}{no + 1}/{len(datas)}")
                 res = self.get_user_mining(data)
                 print(self.line)
@@ -133,12 +133,12 @@ class PocketfiTod:
             _end = int(time.time())
             _tot = _end - _start
             _min = min(list_countdown)
-            
+
             if (_min - _tot) <= 0:
                 continue
-            
+
             self.countdown(_min - _tot)
-            
+
 
 if __name__ == "__main__":
     try:
