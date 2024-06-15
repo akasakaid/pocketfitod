@@ -129,6 +129,7 @@ class PocketfiTod:
                 res = self.get_user_mining(data)
                 print(self.line)
                 list_countdown.append(res)
+                self.countdown(5)
             _end = int(time.time())
             _tot = _end - _start
             _min = min(list_countdown) - _tot
