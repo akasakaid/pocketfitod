@@ -46,15 +46,27 @@ class PocketfiTod:
                 if data is None:
                     res = requests.get(url, headers=headers)
                     open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
+                    if "<html>" in res.text:
+                        self.log(f'{merah}failed to fetch json response !')
+                        time.sleep(2)
+                        continue
                     return res
 
                 if data == "":
                     res = requests.post(url, headers=headers)
                     open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
+                    if "<html>" in res.text:
+                        self.log(f'{merah}failed to fetch json response !')
+                        time.sleep(2)
+                        continue
                     return res
 
                 res = requests.post(url, headers=headers, data=data)
                 open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
+                if "<html>" in res.text:
+                    self.log(f'{merah}failed to fetch json response !')
+                    time.sleep(2)
+                    continue
                 return res
 
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
