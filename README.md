@@ -25,6 +25,7 @@ Auto claim for pocketfi bot on telegram every 1 hour
 
 - [x] Auto Claim
 - [x] Multi Account Support
+- [x] Auto Claim Daily Boost
 
 # Register
 
