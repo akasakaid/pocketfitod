@@ -1,10 +1,11 @@
 import os
 import sys
+import json
 import time
 import requests
 from colorama import *
 from datetime import datetime
-from urllib.parse import unquote
+from urllib.parse import unquote, parse_qs
 
 merah = Fore.LIGHTRED_EX
 kuning = Fore.LIGHTYELLOW_EX
@@ -33,6 +34,9 @@ class PocketfiTod:
             "sec-ch-ua-platform": '"Windows"',
         }
         self.line = putih + "~" * 50
+        self.marin_kitagawa = lambda data: {
+            key: value[0] for key, value in parse_qs(data).items()
+        }
 
     def next_claim_is(self, last_claim):
         next_claim = last_claim + 3600
@@ -45,26 +49,14 @@ class PocketfiTod:
             try:
                 if data is None:
                     res = requests.get(url, headers=headers)
-                    open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
-                    if "<html>" in res.text:
-                        self.log(f'{merah}failed to fetch json response !')
-                        time.sleep(2)
-                        continue
-                    return res
-
-                if data == "":
+                elif data == "":
                     res = requests.post(url, headers=headers)
-                    open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
-                    if "<html>" in res.text:
-                        self.log(f'{merah}failed to fetch json response !')
-                        time.sleep(2)
-                        continue
-                    return res
+                else:
+                    res = requests.post(url, headers=headers, data=data)
 
-                res = requests.post(url, headers=headers, data=data)
                 open("http.log", "a", encoding="utf-8").write(f"{res.text}\n")
                 if "<html>" in res.text:
-                    self.log(f'{merah}failed to fetch json response !')
+                    self.log(f"{merah}failed to fetch json response !")
                     time.sleep(2)
                     continue
                 return res
@@ -75,7 +67,7 @@ class PocketfiTod:
                 continue
 
     def countdown(self, t):
-        while t:
+        for t in range(t, 0, -1):
             menit, detik = divmod(t, 60)
             jam, menit = divmod(menit, 60)
             jam = str(jam).zfill(2)
@@ -115,6 +107,30 @@ class PocketfiTod:
         self.log(f"{hijau}balance after claim : {putih}{new_balance}")
         return 3600
 
+    def daily_task(self, tg_data):
+        task_url = "https://rubot.pocketfi.org/mining/taskExecuting"
+        active_boost_url = "https://rubot.pocketfi.org/boost/activateDailyBoost"
+        headers = self.headers.copy()
+        headers["telegramRawData"] = tg_data
+        res = self.http(task_url, headers)
+        tasks = res.json().get("tasks")
+        if tasks is None:
+            self.log(f"{merah}tasks is none, try again later !")
+            return None
+        daily = tasks.get("daily")[0]
+        done_amount = daily.get("doneAmount")
+        current_day = daily.get("currentDay")
+        reward_list = daily.get("rewardList")
+        if done_amount < reward_list[current_day]:
+            res = self.http(active_boost_url, headers, "")
+            if res.status_code != 200:
+                self.log(f"{merah}failed claim daily boost today !")
+                return False
+            self.log(f"{hijau}success {putih}claim daily boost today !")
+            return True
+        self.log(f"{kuning}already {putih}claim daily today !")
+        return True
+
     def main(self):
         banner = f"""
     {hijau}Auto Claim {putih}Pocketfi Bot {hijau}Telegram Every 1 Hour
@@ -138,6 +154,10 @@ class PocketfiTod:
             _start = int(time.time())
             for no, data in enumerate(datas):
                 self.log(f"{hijau}account number : {putih}{no + 1}/{len(datas)}")
+                parser = self.marin_kitagawa(data)
+                user = json.loads(parser.get("user"))
+                self.log(f"{hijau}login as {putih}{user.get('first_name')}")
+                self.daily_task(data)
                 res = self.get_user_mining(data)
                 print(self.line)
                 list_countdown.append(res)
