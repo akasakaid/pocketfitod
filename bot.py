@@ -22,7 +22,7 @@ class PocketfiTod:
             "Accept": "*/*",
             "Accept-Language": "en-US,en;q=0.9",
             "Connection": "keep-alive",
-            "Host": "rubot.pocketfi.org",
+            "Host": "gm.pocketfi.org",
             "Origin": "https://pocketfi.app",
             "Referer": "https://pocketfi.app/",
             "Sec-Fetch-Dest": "empty",
@@ -83,10 +83,10 @@ class PocketfiTod:
         print(f"{hitam}[{now}] {reset}{msg}")
 
     def get_user_mining(self, tg_data):
-        url = "https://rubot.pocketfi.org/mining/getUserMining"
-        url_claim = "https://rubot.pocketfi.org/mining/claimMining"
+        url = "https://gm.pocketfi.org/mining/getUserMining"
+        url_claim = "https://gm.pocketfi.org/mining/claimMining"
         headers = self.headers.copy()
-        headers["telegramRawData"] = tg_data
+        headers["Telegramrawdata"] = tg_data
         res = self.http(url, headers)
         if len(res.text) <= 0:
             self.log(f"{merah}failed get resopnse, 0 length response !")
@@ -108,8 +108,8 @@ class PocketfiTod:
         return 3600
 
     def daily_task(self, tg_data):
-        task_url = "https://rubot.pocketfi.org/mining/taskExecuting"
-        active_boost_url = "https://rubot.pocketfi.org/boost/activateDailyBoost"
+        task_url = "https://bot2.pocketfi.org/mining/taskExecuting"
+        active_boost_url = "https://bot2.pocketfi.org/boost/activateDailyBoost"
         headers = self.headers.copy()
         headers["telegramRawData"] = tg_data
         res = self.http(task_url, headers)
