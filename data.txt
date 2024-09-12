@@ -1,0 +1,1 @@
+user=%7B%22id%22%3A5319207457%2C%22first_name%22%3A%22Ahmed%20jabbar%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22ahmedjabbar4%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=6820839729164382850&chat_type=sender&start_param=629438076&auth_date=1726139156&hash=ecf6774eb90b3e3ae56d00e31345d1508abb81e308a3da48c2014f078328cdbf
